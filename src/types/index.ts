@@ -20,8 +20,8 @@ export interface ContactEbp {
 
 export interface Tag {
     id: number;
-    tag_name: string | null;
-    tag_hex: string | null;
+    'tag name': string | null;
+    'tag hex': string | null;
 }
 
 // 7 preset tag colors

@@ -32,7 +32,8 @@ export const TagManager = ({ isOpen, onClose, onTagsChanged, contactId, contactT
     const createTag = async () => {
         if (!tagName.trim()) return;
         setLoading(true);
-        await supabase.from('tags').insert({ tag_name: tagName.trim(), tag_hex: tagHex });
+        const { error } = await supabase.from('tags').insert({ 'tag name': tagName.trim(), 'tag hex': tagHex });
+        if (error) console.error('Create tag error:', error);
         setTagName('');
         setTagHex(TAG_COLORS[0].hex);
         setCreating(false);
@@ -44,7 +45,8 @@ export const TagManager = ({ isOpen, onClose, onTagsChanged, contactId, contactT
     const updateTag = async (id: number) => {
         if (!tagName.trim()) return;
         setLoading(true);
-        await supabase.from('tags').update({ tag_name: tagName.trim(), tag_hex: tagHex }).eq('id', id);
+        const { error } = await supabase.from('tags').update({ 'tag name': tagName.trim(), 'tag hex': tagHex }).eq('id', id);
+        if (error) console.error('Update tag error:', error);
         setEditingId(null);
         setTagName('');
         await fetchTags();
@@ -79,8 +81,8 @@ export const TagManager = ({ isOpen, onClose, onTagsChanged, contactId, contactT
 
     const startEdit = (tag: Tag) => {
         setEditingId(tag.id);
-        setTagName(tag.tag_name || '');
-        setTagHex(tag.tag_hex || TAG_COLORS[0].hex);
+        setTagName(tag['tag name'] || '');
+        setTagHex(tag['tag hex'] || TAG_COLORS[0].hex);
         setCreating(false);
     };
 
@@ -157,8 +159,8 @@ export const TagManager = ({ isOpen, onClose, onTagsChanged, contactId, contactT
                                         <button
                                             onClick={() => toggleTagOnContact(tag.id)}
                                             className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${contactTags.includes(tag.id)
-                                                    ? 'border-[#25D366] bg-[#25D366]'
-                                                    : 'border-zinc-600'
+                                                ? 'border-[#25D366] bg-[#25D366]'
+                                                : 'border-zinc-600'
                                                 }`}
                                         >
                                             {contactTags.includes(tag.id) && <Check size={12} className="text-black" />}
@@ -166,9 +168,9 @@ export const TagManager = ({ isOpen, onClose, onTagsChanged, contactId, contactT
                                     )}
                                     <div
                                         className="w-3 h-3 rounded-full flex-shrink-0"
-                                        style={{ backgroundColor: tag.tag_hex || '#666' }}
+                                        style={{ backgroundColor: tag['tag hex'] || '#666' }}
                                     />
-                                    <span className="flex-1 text-white text-xs">{tag.tag_name || 'Unnamed'}</span>
+                                    <span className="flex-1 text-white text-xs">{tag['tag name'] || 'Unnamed'}</span>
                                     <button onClick={() => startEdit(tag)} className="p-1 hover:bg-white/10 rounded text-zinc-500">
                                         <Edit2 size={13} />
                                     </button>

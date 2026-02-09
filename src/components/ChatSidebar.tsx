@@ -246,8 +246,8 @@ export const ChatSidebar = ({ onSelectChat, selectedChat }: ChatSidebarProps) =>
                                     key={contact.id}
                                     onClick={() => onSelectChat(contact.id)}
                                     className={`w-full px-3 py-2.5 sm:py-3 flex items-center gap-2.5 sm:gap-3 hover:bg-[#1a1a1a] transition-all border-b border-zinc-900/50 ${selectedChat === contact.id
-                                            ? 'bg-[#25D366]/10 border-l-2 border-l-[#25D366]'
-                                            : 'border-l-2 border-l-transparent'
+                                        ? 'bg-[#25D366]/10 border-l-2 border-l-[#25D366]'
+                                        : 'border-l-2 border-l-transparent'
                                         }`}
                                 >
                                     {/* Avatar */}
@@ -298,12 +298,12 @@ export const ChatSidebar = ({ onSelectChat, selectedChat }: ChatSidebarProps) =>
                                                             key={tagId}
                                                             className="px-1.5 py-0.5 rounded text-[8px] sm:text-[9px] font-medium"
                                                             style={{
-                                                                backgroundColor: `${tag.tag_hex}20`,
-                                                                color: tag.tag_hex || '#999',
-                                                                border: `1px solid ${tag.tag_hex}40`,
+                                                                backgroundColor: `${tag['tag hex']}20`,
+                                                                color: tag['tag hex'] || '#999',
+                                                                border: `1px solid ${tag['tag hex']}40`,
                                                             }}
                                                         >
-                                                            {tag.tag_name}
+                                                            {tag['tag name']}
                                                         </span>
                                                     );
                                                 })}
