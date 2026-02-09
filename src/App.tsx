@@ -27,10 +27,7 @@ function App() {
     };
 
     return (
-        <div
-            className="flex w-full bg-black overflow-hidden"
-            style={{ height: '100%' }}
-        >
+        <div className="flex w-full h-full bg-black overflow-hidden">
             {/* Sidebar - Full width on mobile, hidden when chat is open */}
             <div
                 className={`${showMobileChat ? 'hidden' : 'flex'} md:flex w-full md:w-80 lg:w-96 h-full flex-shrink-0`}
