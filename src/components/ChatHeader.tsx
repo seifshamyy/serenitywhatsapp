@@ -77,27 +77,39 @@ export const ChatHeader = ({ contactId, onBack, showBackButton }: ChatHeaderProp
 
             {/* Actions */}
             <div className="flex items-center gap-2 flex-shrink-0">
-                {/* AI Label */}
-                <span className="text-[9px] text-zinc-500 font-medium">AI</span>
+                {/* Toggle Switch + AI Label */}
+                <div className="flex items-center gap-1.5">
+                    <span className={`text-xs font-bold transition-colors duration-300 ${aiEnabled ? 'text-[#25D366]' : 'text-red-400'}`}>AI</span>
 
-                {/* Toggle Switch */}
-                <button
-                    onClick={handleToggle}
-                    disabled={toggling}
-                    className={`relative rounded-full transition-all duration-300 ${aiEnabled ? 'bg-[#25D366]' : 'bg-zinc-600'}`}
-                    style={{ width: '44px', height: '24px' }}
-                >
-                    <div
-                        className="absolute rounded-full bg-white transition-all duration-300"
+                    <button
+                        onClick={handleToggle}
+                        disabled={toggling}
+                        className="relative flex-shrink-0"
                         style={{
-                            width: '20px',
-                            height: '20px',
-                            top: '2px',
-                            left: aiEnabled ? '22px' : '2px',
-                            boxShadow: '0 1px 3px rgba(0,0,0,0.3)',
+                            width: '38px',
+                            height: '22px',
+                            borderRadius: '11px',
+                            backgroundColor: aiEnabled ? '#25D366' : '#52525b',
+                            transition: 'background-color 0.3s',
+                            border: '1.5px solid',
+                            borderColor: aiEnabled ? '#25D366' : '#71717a',
                         }}
-                    />
-                </button>
+                    >
+                        <div
+                            style={{
+                                position: 'absolute',
+                                width: '16px',
+                                height: '16px',
+                                borderRadius: '50%',
+                                backgroundColor: '#fff',
+                                top: '1.5px',
+                                left: aiEnabled ? '18px' : '2px',
+                                transition: 'left 0.3s',
+                                boxShadow: '0 1px 2px rgba(0,0,0,0.4)',
+                            }}
+                        />
+                    </button>
+                </div>
 
                 <button className="p-2 rounded-full hover:bg-white/10 text-zinc-400">
                     <MoreVertical size={18} />
