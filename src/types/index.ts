@@ -11,10 +11,32 @@ export interface WhatsAppMessage {
     created_at: string;       // Timestamp for ordering
 }
 
+export interface ContactEbp {
+    id: number;               // Phone number as bigint
+    name_WA: string | null;
+    AI_replies: string | null; // "true" or "false"
+    tags: number[] | null;    // Array of tag IDs
+}
+
+export interface Tag {
+    id: number;
+    tag_name: string | null;
+    tag_hex: string | null;
+}
+
+// 7 preset tag colors
+export const TAG_COLORS = [
+    { name: 'Green', hex: '#25D366' },
+    { name: 'Blue', hex: '#2196F3' },
+    { name: 'Purple', hex: '#9C27B0' },
+    { name: 'Orange', hex: '#FF9800' },
+    { name: 'Red', hex: '#F44336' },
+    { name: 'Pink', hex: '#E91E63' },
+    { name: 'Cyan', hex: '#00BCD4' },
+];
+
 // Helper to get the contact ID from a message
 export const getContactId = (msg: WhatsAppMessage): string | null => {
-    // If 'from' is a phone number, that's the contact (incoming)
-    // If 'to' is a phone number, that's the contact (outgoing)
     if (msg.from && /^\d+$/.test(msg.from)) return msg.from;
     if (msg.to && /^\d+$/.test(msg.to)) return msg.to;
     return null;
@@ -22,6 +44,5 @@ export const getContactId = (msg: WhatsAppMessage): string | null => {
 
 // Helper to check if message is outgoing (sent by us)
 export const isOutgoing = (msg: WhatsAppMessage): boolean => {
-    // If 'from' is null or not a number, we sent it
     return !msg.from || !/^\d+$/.test(msg.from);
 };
