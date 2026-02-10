@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback } from 'react';
-import { Send, Mic, Paperclip, Smile, X, Loader2 } from 'lucide-react';
+import { Send, Mic, Paperclip, X, Loader2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 interface OutboundHubProps {
@@ -461,9 +461,6 @@ export const OutboundHub = ({ recipientId, onMessageSent }: OutboundHubProps) =>
 
             {!isRecording && (
                 <div className="flex items-end gap-1 sm:gap-2">
-                    <button className="p-2.5 rounded-full text-slate-400 hover:text-red-500 hover:bg-red-50 transition-all hidden sm:block">
-                        <Smile size={22} />
-                    </button>
 
                     <button
                         onClick={() => fileInputRef.current?.click()}
