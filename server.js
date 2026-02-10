@@ -88,6 +88,22 @@ app.post('/api/push/unsubscribe', async (req, res) => {
     res.json({ success: true });
 });
 
+// Test endpoint - manually trigger a push notification
+app.get('/api/push/test', async (req, res) => {
+    console.log('[Test] Sending test push notification...');
+    try {
+        await sendPushToAll({
+            title: 'Test Notification',
+            body: 'If you see this, push is working! 🎉',
+            data: {},
+        });
+        res.json({ success: true, message: 'Test push sent' });
+    } catch (err) {
+        console.error('[Test] Error:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // --- Serve static files ---
 app.use(express.static(path.join(__dirname, 'dist')));
 
@@ -113,9 +129,13 @@ async function startRealtimeListener() {
             },
             async (payload) => {
                 const msg = payload.new;
+                console.log('[Realtime] Got INSERT payload:', JSON.stringify(payload, null, 2));
 
                 // Only notify on incoming messages (msg.from is populated)
-                if (!msg.from) return;
+                if (!msg.from) {
+                    console.log('[Realtime] Skipping - no "from" field');
+                    return;
+                }
 
                 console.log(`[Realtime] New message from ${msg.from}`);
 
