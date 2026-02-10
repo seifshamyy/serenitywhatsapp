@@ -111,6 +111,7 @@ function App() {
                                 contactId={selectedChat}
                                 onBack={handleBack}
                                 showBackButton={true}
+                                onChatDeleted={refetch}
                             />
                             <NeuralFeed key={selectedChat} selectedChat={selectedChat} />
                             <OutboundHub recipientId={selectedChat} onMessageSent={handleMessageSent} />

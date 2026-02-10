@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
-import { ArrowLeft, MoreVertical, User } from 'lucide-react';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { ArrowLeft, MoreVertical, User, Trash2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { ContactEbp } from '../types';
 
@@ -7,12 +7,17 @@ interface ChatHeaderProps {
     contactId: string | null;
     onBack?: () => void;
     showBackButton?: boolean;
+    onChatDeleted?: () => void;
 }
 
-export const ChatHeader = ({ contactId, onBack, showBackButton }: ChatHeaderProps) => {
+export const ChatHeader = ({ contactId, onBack, showBackButton, onChatDeleted }: ChatHeaderProps) => {
     const [contact, setContact] = useState<ContactEbp | null>(null);
     const [aiEnabled, setAiEnabled] = useState(false);
     const [toggling, setToggling] = useState(false);
+    const [menuOpen, setMenuOpen] = useState(false);
+    const [confirmDelete, setConfirmDelete] = useState(false);
+    const [deleting, setDeleting] = useState(false);
+    const menuRef = useRef<HTMLDivElement>(null);
 
     const fetchContact = useCallback(async () => {
         if (!contactId) return;
@@ -33,6 +38,20 @@ export const ChatHeader = ({ contactId, onBack, showBackButton }: ChatHeaderProp
         fetchContact();
     }, [fetchContact]);
 
+    // Close menu when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (e: MouseEvent) => {
+            if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+                setMenuOpen(false);
+                setConfirmDelete(false);
+            }
+        };
+        if (menuOpen) {
+            document.addEventListener('mousedown', handleClickOutside);
+            return () => document.removeEventListener('mousedown', handleClickOutside);
+        }
+    }, [menuOpen]);
+
     const handleToggle = async () => {
         if (!contactId || toggling) return;
         setToggling(true);
@@ -45,6 +64,25 @@ export const ChatHeader = ({ contactId, onBack, showBackButton }: ChatHeaderProp
             .eq('id', contactId);
 
         setToggling(false);
+    };
+
+    const handleDeleteChat = async () => {
+        if (!contactId || deleting) return;
+        setDeleting(true);
+
+        // Delete all messages where this contact is sender or receiver
+        await supabase
+            .from('whatsappebp')
+            .delete()
+            .or(`from.eq.${contactId},to.eq.${contactId}`);
+
+        setDeleting(false);
+        setMenuOpen(false);
+        setConfirmDelete(false);
+
+        // Navigate back and refresh messages
+        onChatDeleted?.();
+        onBack?.();
     };
 
     if (!contactId) return null;
@@ -114,9 +152,48 @@ export const ChatHeader = ({ contactId, onBack, showBackButton }: ChatHeaderProp
                     </button>
                 </div>
 
-                <button className="p-2 rounded-full hover:bg-slate-100 text-slate-400">
-                    <MoreVertical size={18} />
-                </button>
+                {/* Three-dot menu */}
+                <div className="relative" ref={menuRef}>
+                    <button
+                        onClick={() => { setMenuOpen(!menuOpen); setConfirmDelete(false); }}
+                        className="p-2 rounded-full hover:bg-slate-100 text-slate-400"
+                    >
+                        <MoreVertical size={18} />
+                    </button>
+
+                    {menuOpen && (
+                        <div className="absolute right-0 top-full mt-1 w-48 bg-white rounded-xl border border-slate-200 shadow-xl overflow-hidden z-50 modal-panel">
+                            {!confirmDelete ? (
+                                <button
+                                    onClick={() => setConfirmDelete(true)}
+                                    className="w-full flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 text-sm font-medium transition-colors"
+                                >
+                                    <Trash2 size={16} />
+                                    Delete Chat
+                                </button>
+                            ) : (
+                                <div className="p-3">
+                                    <p className="text-xs text-slate-600 mb-3 font-medium">Delete all messages with this contact?</p>
+                                    <div className="flex gap-2">
+                                        <button
+                                            onClick={() => setConfirmDelete(false)}
+                                            className="flex-1 px-3 py-2 text-xs font-medium text-slate-600 bg-slate-100 rounded-lg hover:bg-slate-200 transition-colors"
+                                        >
+                                            Cancel
+                                        </button>
+                                        <button
+                                            onClick={handleDeleteChat}
+                                            disabled={deleting}
+                                            className="flex-1 px-3 py-2 text-xs font-bold text-white bg-red-500 rounded-lg hover:bg-red-600 transition-colors disabled:opacity-50"
+                                        >
+                                            {deleting ? 'Deleting...' : 'Delete'}
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     );
