@@ -101,57 +101,57 @@ export const TagManager = ({ isOpen, onClose, onTagsChanged, contactId, contactT
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50 bg-black/70 flex items-end sm:items-center justify-center" onClick={onClose}>
-            <div className="w-full sm:w-96 max-h-[80vh] bg-[#1a1a1a] rounded-t-2xl sm:rounded-2xl border border-zinc-700/50 flex flex-col" onClick={e => e.stopPropagation()}>
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-4" onClick={onClose}>
+            <div className="w-full sm:w-[400px] max-h-[80vh] bg-white rounded-2xl sm:rounded-3xl border border-slate-200 flex flex-col shadow-2xl transition-all animate-in fade-in slide-in-from-bottom-4" onClick={e => e.stopPropagation()}>
                 {/* Header */}
-                <div className="flex items-center justify-between p-4 border-b border-zinc-800">
-                    <h3 className="text-white font-medium text-sm">
+                <div className="flex items-center justify-between p-5 border-b border-slate-100">
+                    <h3 className="text-slate-900 font-bold text-lg">
                         {contactId ? 'Assign Tags' : 'Manage Tags'}
                     </h3>
-                    <button onClick={onClose} className="p-1.5 rounded-full hover:bg-white/10 text-zinc-400">
-                        <X size={18} />
+                    <button onClick={onClose} className="p-2 rounded-full hover:bg-slate-100 text-slate-400 transition-colors">
+                        <X size={20} />
                     </button>
                 </div>
 
                 {/* Tag List */}
-                <div className="flex-1 overflow-y-auto p-3 space-y-1.5">
+                <div className="flex-1 overflow-y-auto p-4 space-y-2">
                     {tags.map(tag => (
-                        <div key={tag.id} className="flex items-center gap-2 p-2 rounded-lg hover:bg-white/5">
+                        <div key={tag.id} className="flex items-center gap-2 p-2.5 rounded-xl hover:bg-slate-50 transition-colors border border-transparent hover:border-slate-100">
                             {editingId === tag.id ? (
                                 // Edit mode
-                                <div className="flex-1 flex flex-col gap-2">
+                                <div className="flex-1 flex flex-col gap-3">
                                     <input
                                         value={tagName}
                                         onChange={e => setTagName(e.target.value)}
-                                        className="bg-[#111] border border-zinc-700 rounded px-2 py-1.5 text-xs text-white focus:outline-none focus:border-[#25D366]/50"
+                                        className="bg-white border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500/50"
                                         placeholder="Tag name"
                                         autoFocus
                                     />
-                                    <div className="flex gap-1.5">
+                                    <div className="flex gap-2">
                                         {TAG_COLORS.map(c => (
                                             <button
                                                 key={c.hex}
                                                 onClick={() => setTagHex(c.hex)}
-                                                className="w-6 h-6 rounded-full transition-all"
+                                                className="w-7 h-7 rounded-full transition-all hover:scale-110 active:scale-90"
                                                 style={{
                                                     backgroundColor: c.hex,
-                                                    outline: tagHex === c.hex ? '2px solid white' : 'none',
-                                                    outlineOffset: '2px',
+                                                    border: tagHex === c.hex ? '3px solid white' : 'none',
+                                                    boxShadow: tagHex === c.hex ? `0 0 0 2px ${c.hex}` : 'none',
                                                 }}
                                             />
                                         ))}
                                     </div>
-                                    <div className="flex gap-1.5 mt-1">
+                                    <div className="flex gap-2 mt-1">
                                         <button
                                             onClick={() => updateTag(tag.id)}
                                             disabled={loading}
-                                            className="px-3 py-1 bg-[#25D366] text-black rounded text-xs font-medium"
+                                            className="px-4 py-2 bg-red-500 text-white rounded-xl text-xs font-bold shadow-sm"
                                         >
-                                            Save
+                                            Save Changes
                                         </button>
                                         <button
                                             onClick={() => setEditingId(null)}
-                                            className="px-3 py-1 bg-zinc-700 text-white rounded text-xs"
+                                            className="px-4 py-2 bg-slate-100 text-slate-600 rounded-xl text-xs font-bold"
                                         >
                                             Cancel
                                         </button>
@@ -161,37 +161,37 @@ export const TagManager = ({ isOpen, onClose, onTagsChanged, contactId, contactT
                                 // Display mode
                                 <>
                                     {contactId ? (
-                                        // Contact mode: just checkbox + tag info, clickable row
+                                        // Contact mode
                                         <button
                                             onClick={() => toggleTagOnContact(tag.id)}
                                             disabled={loading}
-                                            className="flex items-center gap-2 flex-1 text-left"
+                                            className="flex items-center gap-3 flex-1 text-left group"
                                         >
-                                            <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all flex-shrink-0 ${localContactTags.includes(tag.id)
-                                                ? 'border-[#25D366] bg-[#25D366]'
-                                                : 'border-zinc-600'
+                                            <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all flex-shrink-0 ${localContactTags.includes(tag.id)
+                                                ? 'border-red-500 bg-red-500'
+                                                : 'border-slate-300 bg-white group-hover:border-red-400'
                                                 }`}>
-                                                {localContactTags.includes(tag.id) && <Check size={12} className="text-black" />}
+                                                {localContactTags.includes(tag.id) && <Check size={14} className="text-white" />}
                                             </div>
                                             <div
-                                                className="w-3 h-3 rounded-full flex-shrink-0"
-                                                style={{ backgroundColor: tag['tag hex'] || '#666' }}
+                                                className="w-4 h-4 rounded-full flex-shrink-0 shadow-sm"
+                                                style={{ backgroundColor: tag['tag hex'] || '#64748b' }}
                                             />
-                                            <span className="flex-1 text-white text-xs">{tag['tag name'] || 'Unnamed'}</span>
+                                            <span className="flex-1 text-slate-700 font-bold text-sm">{tag['tag name'] || 'Unnamed'}</span>
                                         </button>
                                     ) : (
-                                        // Manager mode: tag info + edit/delete
+                                        // Manager mode
                                         <>
                                             <div
-                                                className="w-3 h-3 rounded-full flex-shrink-0"
-                                                style={{ backgroundColor: tag['tag hex'] || '#666' }}
+                                                className="w-4 h-4 rounded-full flex-shrink-0 shadow-sm"
+                                                style={{ backgroundColor: tag['tag hex'] || '#64748b' }}
                                             />
-                                            <span className="flex-1 text-white text-xs">{tag['tag name'] || 'Unnamed'}</span>
-                                            <button onClick={() => startEdit(tag)} className="p-1 hover:bg-white/10 rounded text-zinc-500">
-                                                <Edit2 size={13} />
+                                            <span className="flex-1 text-slate-700 font-bold text-sm">{tag['tag name'] || 'Unnamed'}</span>
+                                            <button onClick={() => startEdit(tag)} className="p-2 hover:bg-slate-100 rounded-lg text-slate-400 hover:text-red-500 transition-colors">
+                                                <Edit2 size={16} />
                                             </button>
-                                            <button onClick={() => deleteTag(tag.id)} className="p-1 hover:bg-red-500/20 rounded text-zinc-500 hover:text-red-400">
-                                                <Trash2 size={13} />
+                                            <button onClick={() => deleteTag(tag.id)} className="p-2 hover:bg-red-50 rounded-lg text-slate-400 hover:text-red-600 transition-colors">
+                                                <Trash2 size={16} />
                                             </button>
                                         </>
                                     )}
@@ -201,44 +201,47 @@ export const TagManager = ({ isOpen, onClose, onTagsChanged, contactId, contactT
                     ))}
 
                     {tags.length === 0 && !creating && (
-                        <p className="text-center text-zinc-500 text-xs py-4">No tags yet</p>
+                        <div className="text-center py-10 px-4">
+                            <div className="text-4xl mb-3">🏷️</div>
+                            <p className="text-slate-400 text-sm">No tags found. Create one to organize your leads.</p>
+                        </div>
                     )}
 
                     {/* Create form */}
                     {creating && (
-                        <div className="p-2 bg-white/5 rounded-lg space-y-2">
+                        <div className="p-4 bg-red-50/50 rounded-2xl border border-red-100 space-y-3 animate-in zoom-in-95 duration-200">
                             <input
                                 value={tagName}
                                 onChange={e => setTagName(e.target.value)}
-                                className="w-full bg-[#111] border border-zinc-700 rounded px-2 py-1.5 text-xs text-white focus:outline-none focus:border-[#25D366]/50"
-                                placeholder="Tag name"
+                                className="w-full bg-white border border-red-200 rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500/50 shadow-sm"
+                                placeholder="Enter tag name..."
                                 autoFocus
                             />
-                            <div className="flex gap-1.5">
+                            <div className="flex gap-2">
                                 {TAG_COLORS.map(c => (
                                     <button
                                         key={c.hex}
                                         onClick={() => setTagHex(c.hex)}
-                                        className="w-6 h-6 rounded-full transition-all"
+                                        className="w-7 h-7 rounded-full transition-all hover:scale-110 active:scale-90"
                                         style={{
                                             backgroundColor: c.hex,
-                                            outline: tagHex === c.hex ? '2px solid white' : 'none',
-                                            outlineOffset: '2px',
+                                            border: tagHex === c.hex ? '3px solid white' : 'none',
+                                            boxShadow: tagHex === c.hex ? `0 0 0 2px ${c.hex}` : 'none',
                                         }}
                                     />
                                 ))}
                             </div>
-                            <div className="flex gap-1.5 mt-1">
+                            <div className="flex gap-2 pt-1">
                                 <button
                                     onClick={createTag}
                                     disabled={loading || !tagName.trim()}
-                                    className="px-3 py-1 bg-[#25D366] text-black rounded text-xs font-medium disabled:opacity-50"
+                                    className="px-6 py-2 bg-red-500 text-white rounded-xl text-xs font-bold shadow-md hover:bg-red-600 transition-colors disabled:opacity-50"
                                 >
-                                    Create
+                                    Create Tag
                                 </button>
                                 <button
                                     onClick={() => setCreating(false)}
-                                    className="px-3 py-1 bg-zinc-700 text-white rounded text-xs"
+                                    className="px-4 py-2 bg-white text-slate-600 border border-slate-200 rounded-xl text-xs font-bold hover:bg-slate-50 transition-colors"
                                 >
                                     Cancel
                                 </button>
@@ -249,18 +252,18 @@ export const TagManager = ({ isOpen, onClose, onTagsChanged, contactId, contactT
 
                 {/* Footer */}
                 {!creating && editingId === null && (
-                    <div className="p-3 border-t border-zinc-800 flex gap-2">
+                    <div className="p-5 border-t border-slate-100 flex gap-3">
                         <button
                             onClick={startCreate}
-                            className="flex-1 py-2 bg-white/5 hover:bg-white/10 border border-zinc-700 rounded-lg text-xs text-zinc-300 flex items-center justify-center gap-1.5 transition-colors"
+                            className="flex-1 py-3 bg-white hover:bg-slate-50 border border-slate-200 rounded-2xl text-sm text-slate-600 font-bold flex items-center justify-center gap-2 transition-all shadow-sm active:scale-95"
                         >
-                            <Plus size={14} /> New Tag
+                            <Plus size={18} /> New Tag
                         </button>
                         <button
                             onClick={onClose}
-                            className="flex-1 py-2 bg-[#25D366] hover:bg-[#1ebc57] rounded-lg text-xs text-black font-medium flex items-center justify-center gap-1.5 transition-colors"
+                            className="flex-1 py-3 bg-red-500 hover:bg-red-600 rounded-2xl text-sm text-white font-bold flex items-center justify-center gap-2 transition-all shadow-md active:scale-95"
                         >
-                            <Check size={14} /> Done
+                            <Check size={18} /> Finish
                         </button>
                     </div>
                 )}

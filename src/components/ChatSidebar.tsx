@@ -35,16 +35,13 @@ const saveReadMessages = (ids: Set<number>) => {
 };
 
 const AVATAR_COLORS = [
-    { from: '#25D366', to: '#128C7E', text: '#25D366' },
-    { from: '#E91E63', to: '#C2185B', text: '#E91E63' },
-    { from: '#9C27B0', to: '#7B1FA2', text: '#9C27B0' },
-    { from: '#3F51B5', to: '#303F9F', text: '#3F51B5' },
-    { from: '#2196F3', to: '#1976D2', text: '#2196F3' },
-    { from: '#00BCD4', to: '#0097A7', text: '#00BCD4' },
-    { from: '#FF9800', to: '#F57C00', text: '#FF9800' },
-    { from: '#FF5722', to: '#E64A19', text: '#FF5722' },
-    { from: '#795548', to: '#5D4037', text: '#795548' },
-    { from: '#607D8B', to: '#455A64', text: '#607D8B' },
+    { from: '#ef4444', to: '#b91c1c', text: '#ef4444' },
+    { from: '#3b82f6', to: '#1d4ed8', text: '#3b82f6' },
+    { from: '#8b5cf6', to: '#6d28d9', text: '#8b5cf6' },
+    { from: '#f59e0b', to: '#d97706', text: '#f59e0b' },
+    { from: '#ec4899', to: '#be185d', text: '#ec4899' },
+    { from: '#06b6d4', to: '#0891b2', text: '#06b6d4' },
+    { from: '#10b981', to: '#059669', text: '#10b981' },
 ];
 
 const getAvatarColor = (contactId: string) => {
@@ -180,13 +177,6 @@ export const ChatSidebar = ({ onSelectChat, selectedChat }: ChatSidebarProps) =>
 
     const getTagById = (tagId: number) => allTags.find(t => t.id === tagId);
 
-    const openTagManagerForContact = (e: React.MouseEvent, contactId: string, contactTagIds: number[]) => {
-        e.stopPropagation();
-        setTagManagerContactId(contactId);
-        setTagManagerContactTags(contactTagIds);
-        setTagManagerOpen(true);
-    };
-
     const openTagManagerGlobal = () => {
         setTagManagerContactId(undefined);
         setTagManagerContactTags([]);
@@ -200,52 +190,55 @@ export const ChatSidebar = ({ onSelectChat, selectedChat }: ChatSidebarProps) =>
 
     return (
         <>
-            <div className="w-full h-full bg-[#111111] border-r border-[#25D366]/20 flex flex-col">
+            <div className="w-full h-full bg-[#ffffff] border-r border-slate-200 flex flex-col">
                 {/* Header */}
-                <div className="px-3 sm:px-4 flex items-center justify-between border-b border-[#25D366]/20 bg-[#0a0a0a] flex-shrink-0" style={{ paddingTop: 'max(0.5rem, env(safe-area-inset-top))', paddingBottom: '0.5rem' }}>
+                <div className="px-3 sm:px-4 flex items-center justify-between border-b border-slate-200 bg-white flex-shrink-0" style={{ paddingTop: 'max(0.5rem, env(safe-area-inset-top))', paddingBottom: '0.5rem' }}>
                     <div className="flex items-center gap-2">
                         <img
-                            src="https://whmbrguzumyatnslzfsq.supabase.co/storage/v1/object/public/Client%20Logos/d44435d6-4dfb-4616-8e0f-6cd45a88403d.jpeg"
-                            alt="Portal Logo"
-                            className="w-7 h-9 sm:w-8 sm:h-10 rounded-md object-cover"
+                            src="https://whmbrguzumyatnslzfsq.supabase.co/storage/v1/object/public/Client%20Logos/download%20(8).jpeg"
+                            alt="CRM Agent Logo"
+                            className="w-8 h-8 rounded-full object-cover border border-slate-200"
                         />
-                        <span className="font-semibold text-white text-sm">Portal <span className="text-zinc-500 font-normal text-[10px] sm:text-[11px]">by Flowmaticlabs</span></span>
+                        <div className="flex flex-col">
+                            <span className="font-bold text-slate-900 text-sm leading-tight">CRM Agent</span>
+                            <span className="text-slate-500 font-medium text-[10px]">Active Hub</span>
+                        </div>
                     </div>
                     <div className="flex items-center gap-1">
                         <button
                             onClick={async () => {
                                 if (!isPushSupported()) {
-                                    alert('Push notifications require adding this app to your home screen first.');
+                                    alert('Notifications require adding this app to your home screen.');
                                     return;
                                 }
                                 const success = await subscribeToPush();
                                 if (success) setNotifEnabled(true);
                             }}
-                            className={`p-1.5 rounded-full hover:bg-white/5 transition-colors ${notifEnabled ? 'text-[#25D366]' : 'text-zinc-400 hover:text-[#25D366] animate-pulse'
+                            className={`p-1.5 rounded-full hover:bg-slate-100 transition-colors ${notifEnabled ? 'text-red-500' : 'text-slate-400 hover:text-red-500 animate-pulse'
                                 }`}
                             title={notifEnabled ? 'Notifications enabled' : 'Enable notifications'}
                         >
                             {notifEnabled ? <BellRing size={16} /> : <Bell size={16} />}
                         </button>
-                        <button onClick={openTagManagerGlobal} className="p-1.5 rounded-full hover:bg-white/5 text-zinc-400 hover:text-[#25D366] transition-colors" title="Manage Tags">
+                        <button onClick={openTagManagerGlobal} className="p-1.5 rounded-full hover:bg-slate-100 text-slate-400 hover:text-red-500 transition-colors" title="Manage Tags">
                             <TagIcon size={16} />
                         </button>
-                        <button className="p-1.5 sm:p-2 rounded-full hover:bg-white/5 text-[#25D366] transition-colors">
+                        <button className="p-1.5 sm:p-2 rounded-full hover:bg-slate-100 text-red-500 transition-colors">
                             <Plus size={18} />
                         </button>
                     </div>
                 </div>
 
                 {/* Search */}
-                <div className="p-2 sm:p-3 flex-shrink-0">
+                <div className="p-2 sm:p-3 flex-shrink-0 bg-slate-50/50">
                     <div className="relative">
-                        <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
+                        <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                         <input
                             type="text"
-                            placeholder="Search..."
+                            placeholder="Search chats..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full bg-[#1a1a1a] border border-zinc-800 rounded-lg py-2 pl-9 pr-3 text-xs sm:text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:border-[#25D366]/50"
+                            className="w-full bg-white border border-slate-200 rounded-lg py-2 pl-9 pr-3 text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-red-500/30 focus:border-red-500/50"
                         />
                     </div>
                 </div>
@@ -253,73 +246,69 @@ export const ChatSidebar = ({ onSelectChat, selectedChat }: ChatSidebarProps) =>
                 {/* Contact List */}
                 <div className="flex-1 overflow-y-auto min-h-0">
                     {loading ? (
-                        <div className="text-center text-[#25D366] text-xs py-6 animate-pulse">Loading...</div>
+                        <div className="text-center text-red-500 text-xs py-6 animate-pulse">Scanning...</div>
                     ) : filteredContacts.length === 0 ? (
-                        <div className="text-center text-zinc-500 text-xs py-6">No conversations</div>
+                        <div className="text-center text-slate-400 text-xs py-10 px-4">
+                            No conversations match your search
+                        </div>
                     ) : (
                         filteredContacts.map((contact) => {
                             const color = getAvatarColor(contact.id);
-                            const displayName = contact.name || `+${contact.id}`;
                             return (
                                 <button
                                     key={contact.id}
                                     onClick={() => onSelectChat(contact.id)}
-                                    className={`w-full px-3 py-2.5 sm:py-3 flex items-center gap-2.5 sm:gap-3 hover:bg-[#1a1a1a] transition-all border-b border-zinc-900/50 ${selectedChat === contact.id
-                                        ? 'bg-[#25D366]/10 border-l-2 border-l-[#25D366]'
-                                        : 'border-l-2 border-l-transparent'
+                                    className={`w-full p-2.5 sm:p-3 flex items-center gap-3 transition-all cursor-pointer border-l-2 ${selectedChat === contact.id
+                                        ? 'bg-red-50 border-red-500'
+                                        : 'hover:bg-slate-50 border-transparent'
                                         }`}
                                 >
                                     {/* Avatar */}
                                     <div className="relative flex-shrink-0">
                                         <div
-                                            className="w-10 h-10 sm:w-11 sm:h-11 rounded-full flex items-center justify-center"
-                                            style={selectedChat === contact.id
-                                                ? { background: `linear-gradient(135deg, ${color.from}, ${color.to})` }
-                                                : { background: `linear-gradient(135deg, ${color.from}20, ${color.to}20)`, border: `1px solid ${color.from}30` }
-                                            }
+                                            className="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-white font-semibold text-sm sm:text-base shadow-sm"
+                                            style={{
+                                                background: `linear-gradient(135deg, ${color.from}, ${color.to})`
+                                            }}
                                         >
-                                            <User size={18} style={{ color: selectedChat === contact.id ? 'black' : color.text }} />
+                                            {contact.name?.[0]?.toUpperCase() || <User size={18} />}
                                         </div>
                                         {contact.unreadCount > 0 && selectedChat !== contact.id && (
-                                            <div className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-1 rounded-full bg-[#25D366] flex items-center justify-center">
-                                                <span className="text-[9px] font-bold text-black">
-                                                    {contact.unreadCount > 99 ? '99+' : contact.unreadCount}
-                                                </span>
+                                            <div className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-1 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center shadow-sm">
+                                                {contact.unreadCount}
                                             </div>
                                         )}
                                     </div>
 
                                     {/* Info */}
-                                    <div className="flex-1 min-w-0 text-left">
-                                        <div className="flex items-center justify-between mb-0.5">
-                                            <span className={`font-medium text-xs sm:text-sm truncate ${contact.unreadCount > 0 && selectedChat !== contact.id ? 'text-white' : 'text-zinc-300'}`}>
-                                                {displayName}
+                                    <div className="flex-1 min-w-0">
+                                        <div className="flex items-center justify-between gap-1 mb-0.5">
+                                            <span className="font-semibold text-slate-900 truncate text-sm sm:text-base text-left">
+                                                {contact.name || `+${contact.id}`}
                                             </span>
-                                            <span className={`text-[9px] sm:text-[10px] ml-1.5 flex-shrink-0 ${contact.unreadCount > 0 && selectedChat !== contact.id ? 'text-[#25D366]' : 'text-zinc-500'}`}>
+                                            <span className={`text-[9px] sm:text-[10px] ml-1.5 flex-shrink-0 ${contact.unreadCount > 0 && selectedChat !== contact.id ? 'text-red-500 font-bold' : 'text-slate-400'}`}>
                                                 {formatTime(contact.lastMessageTime)}
                                             </span>
                                         </div>
-
-                                        <div className="flex items-center gap-1">
-                                            <p className={`text-[11px] sm:text-xs truncate flex-1 ${contact.unreadCount > 0 && selectedChat !== contact.id ? 'text-zinc-200 font-medium' : 'text-zinc-400'}`}>
+                                        <div className="flex items-center justify-between gap-2">
+                                            <p className={`text-xs truncate flex-1 text-left ${contact.unreadCount > 0 && selectedChat !== contact.id ? 'text-slate-900 font-medium' : 'text-slate-500'}`}>
                                                 {contact.lastMessage}
                                             </p>
                                         </div>
-
-                                        {/* Tags */}
+                                        {/* Tags Display */}
                                         {contact.tags && contact.tags.length > 0 && (
-                                            <div className="flex gap-1 mt-1 flex-wrap">
+                                            <div className="flex flex-wrap gap-1 mt-1.5">
                                                 {contact.tags.map(tagId => {
                                                     const tag = getTagById(tagId);
                                                     if (!tag) return null;
                                                     return (
                                                         <span
-                                                            key={tagId}
-                                                            className="px-1.5 py-0.5 rounded text-[8px] sm:text-[9px] font-medium"
+                                                            key={tag.id}
+                                                            className="px-1.5 py-0.5 rounded text-[8px] sm:text-[9px] font-medium leading-none"
                                                             style={{
-                                                                backgroundColor: `${tag['tag hex']}20`,
-                                                                color: tag['tag hex'] || '#999',
-                                                                border: `1px solid ${tag['tag hex']}40`,
+                                                                backgroundColor: `${tag['tag hex']}15`,
+                                                                color: tag['tag hex'] || '#ef4444',
+                                                                border: `1px solid ${tag['tag hex']}30`
                                                             }}
                                                         >
                                                             {tag['tag name']}
@@ -329,14 +318,6 @@ export const ChatSidebar = ({ onSelectChat, selectedChat }: ChatSidebarProps) =>
                                             </div>
                                         )}
                                     </div>
-
-                                    {/* Tag assign button */}
-                                    <button
-                                        onClick={(e) => openTagManagerForContact(e, contact.id, contact.tags || [])}
-                                        className="p-1 rounded hover:bg-white/10 text-zinc-600 hover:text-zinc-300 flex-shrink-0"
-                                    >
-                                        <TagIcon size={12} />
-                                    </button>
                                 </button>
                             );
                         })
@@ -344,8 +325,8 @@ export const ChatSidebar = ({ onSelectChat, selectedChat }: ChatSidebarProps) =>
                 </div>
 
                 {/* Footer */}
-                <div className="hidden sm:flex h-8 px-4 items-center justify-center border-t border-[#25D366]/20 bg-[#0a0a0a] flex-shrink-0">
-                    <span className="text-[9px] text-zinc-600 font-mono">PORTAL v1.0</span>
+                <div className="hidden sm:flex h-8 px-4 items-center justify-center border-t border-slate-100 bg-slate-50 flex-shrink-0">
+                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">CRM AGENT v1.1</span>
                 </div>
             </div>
 

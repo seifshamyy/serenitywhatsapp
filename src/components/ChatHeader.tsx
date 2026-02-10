@@ -53,24 +53,24 @@ export const ChatHeader = ({ contactId, onBack, showBackButton }: ChatHeaderProp
 
     return (
         <div
-            className="px-2 flex items-center justify-between border-b border-[#25D366]/20 bg-[#0a0a0a] flex-shrink-0"
+            className="px-2 flex items-center justify-between border-b border-slate-200 bg-white flex-shrink-0"
             style={{ paddingTop: 'max(0.5rem, env(safe-area-inset-top))', paddingBottom: '0.5rem', minHeight: '52px' }}
         >
             <div className="flex items-center gap-2 min-w-0 flex-1">
                 {showBackButton && (
-                    <button onClick={onBack} className="p-2 -ml-1 rounded-full hover:bg-white/10 text-[#25D366] active:bg-white/20">
+                    <button onClick={onBack} className="p-2 -ml-1 rounded-full hover:bg-slate-100 text-red-500 active:bg-slate-200">
                         <ArrowLeft size={22} />
                     </button>
                 )}
 
-                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#25D366] to-[#128C7E] flex items-center justify-center flex-shrink-0">
-                    <User size={18} className="text-black" />
+                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center flex-shrink-0 shadow-sm">
+                    <User size={18} className="text-white" />
                 </div>
 
-                <div className="min-w-0 flex-1">
-                    <h2 className="text-white font-medium text-sm truncate">{displayName}</h2>
+                <div className="min-w-0 flex-1 ml-1">
+                    <h2 className="text-slate-900 font-bold text-sm truncate">{displayName}</h2>
                     {contact?.name_WA && (
-                        <p className="text-zinc-500 text-[10px] truncate">+{contactId}</p>
+                        <p className="text-slate-500 text-[10px] truncate">+{contactId}</p>
                     )}
                 </div>
             </div>
@@ -79,7 +79,7 @@ export const ChatHeader = ({ contactId, onBack, showBackButton }: ChatHeaderProp
             <div className="flex items-center gap-2 flex-shrink-0">
                 {/* Toggle Switch + AI Label */}
                 <div className="flex items-center gap-1.5">
-                    <span className={`text-xs font-bold transition-colors duration-300 ${aiEnabled ? 'text-[#25D366]' : 'text-red-400'}`}>AI</span>
+                    <span className={`text-xs font-bold transition-colors duration-300 ${aiEnabled ? 'text-red-500' : 'text-slate-400'}`}>AI</span>
 
                     <button
                         onClick={handleToggle}
@@ -91,10 +91,10 @@ export const ChatHeader = ({ contactId, onBack, showBackButton }: ChatHeaderProp
                             minHeight: '22px',
                             maxHeight: '22px',
                             borderRadius: '11px',
-                            backgroundColor: aiEnabled ? '#25D366' : '#52525b',
+                            backgroundColor: aiEnabled ? '#ef4444' : '#e2e8f0',
                             transition: 'background-color 0.3s',
                             border: '1.5px solid',
-                            borderColor: aiEnabled ? '#25D366' : '#71717a',
+                            borderColor: aiEnabled ? '#ef4444' : '#cbd5e1',
                             overflow: 'hidden',
                         }}
                     >
@@ -108,13 +108,13 @@ export const ChatHeader = ({ contactId, onBack, showBackButton }: ChatHeaderProp
                                 top: '1.5px',
                                 left: aiEnabled ? '18px' : '2px',
                                 transition: 'left 0.3s',
-                                boxShadow: '0 1px 2px rgba(0,0,0,0.4)',
+                                boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
                             }}
                         />
                     </button>
                 </div>
 
-                <button className="p-2 rounded-full hover:bg-white/10 text-zinc-400">
+                <button className="p-2 rounded-full hover:bg-slate-100 text-slate-400">
                     <MoreVertical size={18} />
                 </button>
             </div>
