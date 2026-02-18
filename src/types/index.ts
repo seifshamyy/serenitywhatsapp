@@ -9,6 +9,7 @@ export interface WhatsAppMessage {
     text: string | null;
     mid: string | null;
     created_at: string;       // Timestamp for ordering
+    status?: 'sending' | 'sent' | 'error'; // Optimistic UI status
 }
 
 export interface ContactEbp {

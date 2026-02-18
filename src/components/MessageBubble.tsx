@@ -46,7 +46,7 @@ export const MessageBubble = ({ message }: MessageBubbleProps) => {
                     className={`
             relative max-w-[85%] sm:max-w-[75%] md:max-w-[65%] px-3 py-2 rounded-2xl shadow-sm
             ${isOwn
-                            ? 'bg-red-50 text-slate-900 border border-red-100 rounded-br-sm'
+                            ? 'bg-emerald-50 text-slate-900 border border-emerald-100 rounded-br-sm'
                             : 'bg-white text-slate-900 border border-slate-100 rounded-bl-sm'
                         }
           `}
@@ -54,7 +54,7 @@ export const MessageBubble = ({ message }: MessageBubbleProps) => {
                 >
                     {/* Reply Indicator */}
                     {message.is_reply === 'true' && message.reply_to_mid && (
-                        <div className="mb-2 px-2 py-1.5 rounded bg-slate-50 border-l-2 border-red-500 text-[11px] text-slate-500 italic">
+                        <div className="mb-2 px-2 py-1.5 rounded bg-slate-50 border-l-2 border-emerald-500 text-[11px] text-slate-500 italic">
                             ↩️ Replying to message
                         </div>
                     )}
@@ -102,17 +102,23 @@ export const MessageBubble = ({ message }: MessageBubbleProps) => {
                         </p>
                     )}
 
-                    {/* Timestamp */}
+                    {/* Timestamp & Status */}
                     <div className={`flex items-center gap-1.5 mt-1 ${isRTL ? 'justify-start' : 'justify-end'}`}>
                         <span className="text-[10px] text-slate-400 font-medium">
                             {formatTime(message.created_at)}
                         </span>
                         {isOwn && (
-                            message.mid ? (
-                                <CheckCheck size={14} className="text-red-500" />
-                            ) : (
-                                <Clock size={12} className="text-slate-300" />
-                            )
+                            <>
+                                {message.status === 'sending' && <Clock size={12} className="text-slate-400 animate-pulse" />}
+                                {message.status === 'error' && <span className="text-emerald-600 text-[10px] font-bold">Retry</span>}
+                                {(!message.status || message.status === 'sent') && (
+                                    message.mid ? (
+                                        <CheckCheck size={14} className="text-emerald-500" />
+                                    ) : (
+                                        <Clock size={12} className="text-slate-300" />
+                                    )
+                                )}
+                            </>
                         )}
                     </div>
                 </div>
@@ -132,7 +138,7 @@ export const MessageBubble = ({ message }: MessageBubbleProps) => {
                     </button>
 
                     <button
-                        className="absolute top-2 left-2 sm:top-4 sm:left-4 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full bg-red-500 text-white font-bold text-xs sm:text-sm flex items-center gap-1.5 shadow-lg"
+                        className="absolute top-2 left-2 sm:top-4 sm:left-4 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full bg-emerald-600 text-white font-bold text-xs sm:text-sm flex items-center gap-1.5 shadow-lg"
                         onClick={(e) => {
                             e.stopPropagation();
                             handleDownload();

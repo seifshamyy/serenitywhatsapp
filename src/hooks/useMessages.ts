@@ -10,7 +10,7 @@ export const useMessages = () => {
     const fetchMessages = useCallback(async () => {
         try {
             const { data, error } = await supabase
-                .from('whatsappebp')
+                .from('whatsappbuongo')
                 .select('*')
                 .order('created_at', { ascending: true }); // Order by timestamp
 
@@ -24,8 +24,8 @@ export const useMessages = () => {
         }
     }, []);
 
-    // Add message locally (for immediate UI update)
-    const addLocalMessage = useCallback((message: Partial<WhatsAppMessage>) => {
+    // Add optimistic message (for immediate UI update)
+    const addOptimisticMessage = useCallback((message: Partial<WhatsAppMessage>) => {
         const newMsg: WhatsAppMessage = {
             id: message.id || Date.now(),
             type: (message.type as WhatsAppMessage['type']) || 'text',
@@ -37,11 +37,13 @@ export const useMessages = () => {
             reply_to_mid: message.reply_to_mid ?? null,
             mid: message.mid ?? null,
             created_at: message.created_at || new Date().toISOString(),
+            status: 'sending'
         };
 
         setMessages((prev) => {
+            // Check if it already exists (by ID or MID)
             const exists = prev.some(
-                (m) => m.id === newMsg.id || (m.mid && m.mid === newMsg.mid)
+                (m) => m.id === newMsg.id || (m.mid && newMsg.mid && m.mid === newMsg.mid)
             );
             if (exists) return prev;
             return [...prev, newMsg];
@@ -53,24 +55,36 @@ export const useMessages = () => {
     useEffect(() => {
         fetchMessages();
 
-        // Poll every 2 seconds
+        // Poll every 3 seconds (less aggressive)
         const pollInterval = setInterval(() => {
             fetchMessages();
-        }, 2000);
+        }, 3000);
 
-        // Real-time subscription (backup)
+        // Real-time subscription
         const channel = supabase
             .channel('messages-realtime-v3')
             .on(
                 'postgres_changes',
-                { event: 'INSERT', schema: 'public', table: 'whatsappebp' },
+                { event: 'INSERT', schema: 'public', table: 'whatsappbuongo' },
                 (payload) => {
+                    const newMsg = payload.new as WhatsAppMessage;
                     setMessages((prev) => {
-                        const exists = prev.some(
-                            (m) => m.id === payload.new.id || (m.mid && m.mid === payload.new.mid)
+                        // If we have an optimistic message with the same MID, replace it
+                        // Or if we have a duplicate by ID
+                        const existingIndex = prev.findIndex(
+                            (m) => m.id === newMsg.id || (m.mid && newMsg.mid && m.mid === newMsg.mid)
                         );
-                        if (exists) return prev;
-                        return [...prev, payload.new as WhatsAppMessage];
+
+                        if (existingIndex !== -1) {
+                            // Update existing (optimistic) message with real data
+                            // Preserving the optimistic one's index is usually good, 
+                            // but since we sort by date in render, replacing is fine.
+                            const updated = [...prev];
+                            updated[existingIndex] = { ...newMsg, status: 'sent' };
+                            return updated;
+                        }
+
+                        return [...prev, { ...newMsg, status: 'sent' }];
                     });
                 }
             )
@@ -82,5 +96,5 @@ export const useMessages = () => {
         };
     }, [fetchMessages]);
 
-    return { messages, loading, error, addLocalMessage, refetch: fetchMessages };
+    return { messages, loading, error, addOptimisticMessage, refetch: fetchMessages };
 };
