@@ -48,8 +48,8 @@ export async function subscribeToPush(): Promise<boolean> {
         // Wait for service worker to be ready
         await navigator.serviceWorker.ready;
 
-        // Get VAPID public key from server
-        const response = await fetch('/api/push/vapid-key');
+        // Get VAPID public key from backend
+        const response = await fetch('https://primary-production-9e01d.up.railway.app/api/push/vapid-key');
         const { publicKey } = await response.json();
 
         if (!publicKey) {
@@ -72,8 +72,8 @@ export async function subscribeToPush(): Promise<boolean> {
             applicationServerKey: urlBase64ToUint8Array(publicKey) as BufferSource,
         });
 
-        // Send subscription to server
-        await fetch('/api/push/subscribe', {
+        // Send subscription to backend
+        await fetch('https://primary-production-9e01d.up.railway.app/api/push/subscribe', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(subscription.toJSON()),
