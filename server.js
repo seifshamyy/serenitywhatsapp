@@ -49,7 +49,7 @@ app.post('/api/push/subscribe', async (req, res) => {
     try {
         // Upsert: if endpoint exists, update keys; otherwise insert
         const { error } = await supabase
-            .from('push_subscriptions_buongo')
+            .from('push_subscriptions_serenity')
             .upsert(
                 {
                     endpoint: subscription.endpoint,

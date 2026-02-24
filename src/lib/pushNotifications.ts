@@ -81,8 +81,9 @@ export async function subscribeToPush(): Promise<boolean> {
 
         console.log('[Push] Subscribed successfully');
         return true;
-    } catch (err) {
+    } catch (err: any) {
         console.error('[Push] Subscribe error:', err);
+        alert('Push Error: ' + (err.message || JSON.stringify(err)));
         return false;
     }
 }
