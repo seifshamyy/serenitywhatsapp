@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useMessages } from '../hooks/useMessages';
 import { MessageBubble } from './MessageBubble';
-import { PullToRefresh } from './PullToRefresh';
 import { MessageSquare } from 'lucide-react';
 import { getContactId } from '../types';
 
@@ -10,7 +9,7 @@ interface NeuralFeedProps {
 }
 
 export const NeuralFeed = ({ selectedChat }: NeuralFeedProps) => {
-    const { messages, loading, error, refetch } = useMessages();
+    const { messages, loading, error } = useMessages();
     const containerRef = useRef<HTMLDivElement>(null);
     const [prevMsgCount, setPrevMsgCount] = useState(0);
 
@@ -74,35 +73,33 @@ export const NeuralFeed = ({ selectedChat }: NeuralFeedProps) => {
     }
 
     return (
-        <PullToRefresh onRefresh={refetch} className="flex-1">
-            <div
-                ref={containerRef}
-                className="h-full overflow-y-auto px-4 py-6"
-                style={{
-                    display: 'flex',
-                    flexDirection: 'column-reverse',
-                    backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2364748b' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-                    backgroundColor: '#f8fafc'
-                }}
-            >
-                {/* Single wrapper div inside column-reverse container.
+        <div
+            ref={containerRef}
+            className="flex-1 overflow-y-auto px-4 py-6"
+            style={{
+                display: 'flex',
+                flexDirection: 'column-reverse',
+                backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2364748b' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+                backgroundColor: '#f8fafc'
+            }}
+        >
+            {/* Single wrapper div inside column-reverse container.
                 column-reverse makes scrollTop=0 the bottom of content.
                 Messages inside this div are in normal chronological order. */}
-                <div className="space-y-4">
-                    {filteredMessages.length === 0 ? (
-                        <div className="flex items-center justify-center py-20">
-                            <div className="text-center bg-white/50 backdrop-blur-sm p-8 rounded-3xl border border-slate-200/50">
-                                <div className="text-5xl mb-4">✨</div>
-                                <p className="text-slate-500 font-medium italic">Start the conversation</p>
-                            </div>
+            <div className="space-y-4">
+                {filteredMessages.length === 0 ? (
+                    <div className="flex items-center justify-center py-20">
+                        <div className="text-center bg-white/50 backdrop-blur-sm p-8 rounded-3xl border border-slate-200/50">
+                            <div className="text-5xl mb-4">✨</div>
+                            <p className="text-slate-500 font-medium italic">Start the conversation</p>
                         </div>
-                    ) : (
-                        filteredMessages.map((msg) => (
-                            <MessageBubble key={msg.id || msg.mid} message={msg} />
-                        ))
-                    )}
-                </div>
+                    </div>
+                ) : (
+                    filteredMessages.map((msg) => (
+                        <MessageBubble key={msg.id || msg.mid} message={msg} />
+                    ))
+                )}
             </div>
-        </PullToRefresh>
+        </div>
     );
 };
