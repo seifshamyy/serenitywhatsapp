@@ -67,7 +67,7 @@ export const ChatSidebar = ({ onSelectChat, selectedChat }: ChatSidebarProps) =>
     );
     const [loading, setLoading] = useState(true);
     const [readMessages, setReadMessages] = useState<Set<number>>(() => loadReadMessages());
-    const [contactsMap, setContactsMap] = useState<Map<string, ContactEbp>>(new Map());
+    const [_contactsMap, setContactsMap] = useState<Map<string, ContactEbp>>(new Map());
     const [allTags, setAllTags] = useState<Tag[]>([]);
     const [tagManagerOpen, setTagManagerOpen] = useState(false);
     const [tagManagerContactId, setTagManagerContactId] = useState<string | undefined>();
