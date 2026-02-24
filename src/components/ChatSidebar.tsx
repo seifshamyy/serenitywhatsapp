@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase';
 import { WhatsAppMessage, ContactEbp, Tag, getContactId } from '../types';
 import { TagManager } from './TagManager';
 import { subscribeToPush, isPushSupported } from '../lib/pushNotifications';
+import { PullToRefresh } from './PullToRefresh';
 
 interface SidebarContact {
     id: string;
@@ -359,7 +360,7 @@ export const ChatSidebar = ({ onSelectChat, selectedChat }: ChatSidebarProps) =>
                 </div>
 
                 {/* Contact List */}
-                <div className="flex-1 overflow-y-auto min-h-0">
+                <PullToRefresh onRefresh={fetchContacts} className="flex-1 min-h-0">
                     {loading ? (
                         <div className="text-center text-red-500 text-xs py-6 animate-pulse">Scanning...</div>
                     ) : filteredContacts.length === 0 ? (
@@ -452,7 +453,7 @@ export const ChatSidebar = ({ onSelectChat, selectedChat }: ChatSidebarProps) =>
                             );
                         })
                     )}
-                </div>
+                </PullToRefresh>
 
                 {/* Footer */}
                 <div className="hidden sm:flex h-8 px-4 items-center justify-center border-t border-slate-100 bg-slate-50 flex-shrink-0">
