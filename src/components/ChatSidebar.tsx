@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Search, Plus, User, Tag as TagIcon, Bell, BellRing } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { WhatsAppMessage, ContactEbp, Tag, getContactId } from '../types';
@@ -52,6 +52,12 @@ const getAvatarColor = (contactId: string) => {
     }
     return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
 };
+
+// Module-level singletons for sidebar realtime channels
+let sidebarMsgChannel: any = null;
+let sidebarContactChannel: any = null;
+let sidebarFetchContactsRef: (() => void) | null = null;
+let sidebarFetchEbpRef: (() => void) | null = null;
 
 export const ChatSidebar = ({ onSelectChat, selectedChat }: ChatSidebarProps) => {
     const [contacts, setContacts] = useState<SidebarContact[]>([]);
@@ -152,14 +158,55 @@ export const ChatSidebar = ({ onSelectChat, selectedChat }: ChatSidebarProps) =>
         fetchTags();
     }, [fetchContactsEbp, fetchTags]);
 
+    // Use refs so the realtime callbacks always call the latest function
+    const fetchContactsRef = useRef(fetchContacts);
+    fetchContactsRef.current = fetchContacts;
+    const fetchContactsEbpRef = useRef(fetchContactsEbp);
+    fetchContactsEbpRef.current = fetchContactsEbp;
+
     useEffect(() => {
-        fetchContacts();
-        const pollInterval = setInterval(() => {
-            fetchContacts();
-            fetchContactsEbp();
-        }, 2000);
-        return () => clearInterval(pollInterval);
-    }, [fetchContacts, fetchContactsEbp]);
+        fetchContactsRef.current();
+
+        // Module-level singleton channels — created once, survive StrictMode
+        if (!sidebarMsgChannel) {
+            sidebarMsgChannel = supabase
+                .channel('sidebar-messages')
+                .on('postgres_changes',
+                    { event: '*', schema: 'public', table: 'whatsappbuongo' },
+                    () => sidebarFetchContactsRef?.()
+                )
+                .subscribe((status) => {
+                    console.log('[Realtime] sidebar-messages status:', status);
+                });
+        }
+
+        if (!sidebarContactChannel) {
+            sidebarContactChannel = supabase
+                .channel('sidebar-contacts')
+                .on('postgres_changes',
+                    { event: '*', schema: 'public', table: 'contacts.buongo' },
+                    () => { sidebarFetchEbpRef?.(); sidebarFetchContactsRef?.(); }
+                )
+                .subscribe((status) => {
+                    console.log('[Realtime] sidebar-contacts status:', status);
+                });
+        }
+
+        // Keep the module-level refs pointing to latest functions
+        sidebarFetchContactsRef = () => fetchContactsRef.current();
+        sidebarFetchEbpRef = () => fetchContactsEbpRef.current();
+
+        // Light fallback poll for contacts (30s) — in case contacts.buongo realtime is blocked by RLS
+        const fallbackPoll = setInterval(() => {
+            fetchContactsEbpRef.current();
+        }, 30000);
+
+        return () => {
+            clearInterval(fallbackPoll);
+            // Don't remove channels — they're singletons that persist across mounts
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const [selectedTagFilter, setSelectedTagFilter] = useState<number | null>(null);
 

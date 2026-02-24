@@ -27,9 +27,7 @@ function App() {
     }, []);
 
     const handleMessageSent = () => {
-        // Optimistic update is handled in OutboundHub
-        // Refetch for redundancy
-        setTimeout(() => refetch(), 1000);
+        // Realtime subscription handles this automatically
     };
 
     // Edge swipe-right to go back (mobile only)
