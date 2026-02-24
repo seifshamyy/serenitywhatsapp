@@ -1,26 +1,26 @@
 {
-    "name": "Buongo",
-    "short_name": "Buongo",
+    "name": "Serenity Spa",
+    "short_name": "Serenity",
     "start_url": "/",
     "display": "fullscreen",
-    "background_color": "#ffffff",
-    "theme_color": "#ffffff",
+    "background_color": "#F2F6F5",
+    "theme_color": "#164E48",
     "orientation": "portrait",
     "icons": [
         {
-            "src": "/pwa-192x192.png",
+            "src": "https://whmbrguzumyatnslzfsq.supabase.co/storage/v1/object/public/Client%20Logos/serenityjepeg.jpg",
             "sizes": "192x192",
-            "type": "image/png"
+            "type": "image/jpeg"
         },
         {
-            "src": "/pwa-512x512.png",
+            "src": "https://whmbrguzumyatnslzfsq.supabase.co/storage/v1/object/public/Client%20Logos/serenityjepeg.jpg",
             "sizes": "512x512",
-            "type": "image/png"
+            "type": "image/jpeg"
         },
         {
-            "src": "/pwa-512x512.png",
+            "src": "https://whmbrguzumyatnslzfsq.supabase.co/storage/v1/object/public/Client%20Logos/serenityjepeg.jpg",
             "sizes": "512x512",
-            "type": "image/png",
+            "type": "image/jpeg",
             "purpose": "maskable"
         }
     ]
