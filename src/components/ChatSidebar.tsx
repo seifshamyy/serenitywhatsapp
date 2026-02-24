@@ -331,7 +331,7 @@ export const ChatSidebar = ({ onSelectChat, selectedChat }: ChatSidebarProps) =>
                             placeholder="Search chats..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full bg-white border border-slate-200 rounded-lg py-2 pl-9 pr-3 text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-red-500/30 focus:border-red-500/50"
+                            className="w-full bg-white border border-slate-200 rounded-lg py-2 pl-9 pr-3 text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-serenity-teal/30 focus:border-serenity-teal/50"
                         />
                     </div>
 
@@ -362,7 +362,7 @@ export const ChatSidebar = ({ onSelectChat, selectedChat }: ChatSidebarProps) =>
                 {/* Contact List */}
                 <PullToRefresh onRefresh={fetchContacts} className="flex-1 min-h-0">
                     {loading ? (
-                        <div className="text-center text-red-500 text-xs py-6 animate-pulse">Scanning...</div>
+                        <div className="text-center text-serenity-peach text-xs py-6 animate-pulse">Scanning...</div>
                     ) : filteredContacts.length === 0 ? (
                         <div className="text-center text-slate-400 text-xs py-10 px-4">
                             No conversations match your search
@@ -391,14 +391,14 @@ export const ChatSidebar = ({ onSelectChat, selectedChat }: ChatSidebarProps) =>
                                         </div>
                                         {/* AI Status Dot */}
                                         <div
-                                            className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white ${contact.aiEnabled ? 'bg-green-500' : 'bg-red-500'}`}
+                                            className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white ${contact.aiEnabled ? 'bg-serenity-teal' : 'bg-serenity-peach'}`}
                                             title={contact.aiEnabled ? 'AI Active' : 'AI Inactive'}
                                         >
-                                            <div className={`absolute inset-0 rounded-full animate-ping opacity-75 ${contact.aiEnabled ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                                            <div className={`absolute inset-0 rounded-full animate-ping opacity-75 ${contact.aiEnabled ? 'bg-serenity-teal' : 'bg-serenity-peach'}`}></div>
                                         </div>
 
                                         {contact.unreadCount > 0 && selectedChat !== contact.id && (
-                                            <div className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-1 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center shadow-sm z-10">
+                                            <div className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-1 rounded-full bg-serenity-peach text-white text-[10px] font-bold flex items-center justify-center shadow-sm z-10">
                                                 {contact.unreadCount}
                                             </div>
                                         )}

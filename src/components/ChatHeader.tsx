@@ -169,7 +169,7 @@ export const ChatHeader = ({ contactId, onBack, showBackButton, onChatDeleted }:
                                 {!confirmDelete ? (
                                     <button
                                         onClick={() => setConfirmDelete(true)}
-                                        className="w-full flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 text-sm font-medium transition-colors"
+                                        className="w-full flex items-center gap-3 px-4 py-3 text-serenity-peach hover:bg-serenity-peach/10 text-sm font-medium transition-colors"
                                     >
                                         <Trash2 size={16} />
                                         Delete Chat
@@ -187,7 +187,7 @@ export const ChatHeader = ({ contactId, onBack, showBackButton, onChatDeleted }:
                                             <button
                                                 onClick={handleDeleteChat}
                                                 disabled={deleting}
-                                                className="flex-1 px-3 py-2 text-xs font-bold text-white bg-red-500 rounded-lg hover:bg-red-600 transition-colors disabled:opacity-50"
+                                                className="flex-1 px-3 py-2 text-xs font-bold text-white bg-serenity-peach rounded-lg hover:bg-serenity-peach/90 transition-colors disabled:opacity-50"
                                             >
                                                 {deleting ? 'Deleting...' : 'Delete'}
                                             </button>

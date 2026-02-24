@@ -26,7 +26,7 @@ export const AudioPlayer = ({ url }: AudioPlayerProps) => {
         wavesurfer.current = WaveSurfer.create({
             container: containerRef.current,
             waveColor: '#cbd5e1', // Light slate
-            progressColor: '#ef4444', // Red accent
+            progressColor: '#D7A799', // Peach accent
             cursorColor: 'transparent',
             barWidth: 2,
             barRadius: 4,
@@ -66,7 +66,7 @@ export const AudioPlayer = ({ url }: AudioPlayerProps) => {
             <button
                 onClick={togglePlay}
                 disabled={!isReady}
-                className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-red-500 text-white flex items-center justify-center hover:bg-red-600 transition-all disabled:opacity-50 flex-shrink-0 shadow-sm"
+                className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-serenity-teal text-white flex items-center justify-center hover:bg-serenity-teal/90 transition-all disabled:opacity-50 flex-shrink-0 shadow-sm"
             >
                 {isPlaying ? <Pause size={18} fill="currentColor" /> : <Play size={18} className="ml-0.5" fill="currentColor" />}
             </button>

@@ -146,7 +146,7 @@ export const TagManager = ({ isOpen, onClose, onTagsChanged, contactId, contactT
                                         <button
                                             onClick={() => updateTag(tag.id)}
                                             disabled={loading}
-                                            className="px-4 py-2 bg-red-500 text-white rounded-xl text-xs font-bold shadow-sm"
+                                            className="px-4 py-2 bg-serenity-teal hover:bg-serenity-teal/90 text-white rounded-xl text-xs font-bold shadow-sm transition-colors"
                                         >
                                             Save Changes
                                         </button>
@@ -169,8 +169,8 @@ export const TagManager = ({ isOpen, onClose, onTagsChanged, contactId, contactT
                                             className="flex items-center gap-3 flex-1 text-left group"
                                         >
                                             <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all flex-shrink-0 ${localContactTags.includes(tag.id)
-                                                ? 'border-red-500 bg-red-500'
-                                                : 'border-slate-300 bg-white group-hover:border-red-400'
+                                                ? 'border-serenity-teal bg-serenity-teal'
+                                                : 'border-slate-300 bg-white group-hover:border-serenity-teal/50'
                                                 }`}>
                                                 {localContactTags.includes(tag.id) && <Check size={14} className="text-white" />}
                                             </div>
@@ -188,10 +188,10 @@ export const TagManager = ({ isOpen, onClose, onTagsChanged, contactId, contactT
                                                 style={{ backgroundColor: tag['tag hex'] || '#64748b' }}
                                             />
                                             <span className="flex-1 text-slate-700 font-bold text-sm">{tag['tag name'] || 'Unnamed'}</span>
-                                            <button onClick={() => startEdit(tag)} className="p-2 hover:bg-slate-100 rounded-lg text-slate-400 hover:text-red-500 transition-colors">
+                                            <button onClick={() => startEdit(tag)} className="p-2 hover:bg-slate-100 rounded-lg text-slate-400 hover:text-serenity-teal transition-colors">
                                                 <Edit2 size={16} />
                                             </button>
-                                            <button onClick={() => deleteTag(tag.id)} className="p-2 hover:bg-red-50 rounded-lg text-slate-400 hover:text-red-600 transition-colors">
+                                            <button onClick={() => deleteTag(tag.id)} className="p-2 hover:bg-serenity-peach/10 rounded-lg text-slate-400 hover:text-serenity-peach transition-colors">
                                                 <Trash2 size={16} />
                                             </button>
                                         </>
@@ -210,11 +210,11 @@ export const TagManager = ({ isOpen, onClose, onTagsChanged, contactId, contactT
 
                     {/* Create form */}
                     {creating && (
-                        <div className="p-4 bg-red-50/50 rounded-2xl border border-red-100 space-y-3 animate-in zoom-in-95 duration-200">
+                        <div className="p-4 bg-slate-50/50 rounded-2xl border border-slate-100 space-y-3 animate-in zoom-in-95 duration-200">
                             <input
                                 value={tagName}
                                 onChange={e => setTagName(e.target.value)}
-                                className="w-full bg-white border border-red-200 rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500/50 shadow-sm"
+                                className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-serenity-teal/20 focus:border-serenity-teal/50 shadow-sm"
                                 placeholder="Enter tag name..."
                                 autoFocus
                             />
@@ -236,7 +236,7 @@ export const TagManager = ({ isOpen, onClose, onTagsChanged, contactId, contactT
                                 <button
                                     onClick={createTag}
                                     disabled={loading || !tagName.trim()}
-                                    className="px-6 py-2 bg-red-500 text-white rounded-xl text-xs font-bold shadow-md hover:bg-red-600 transition-colors disabled:opacity-50"
+                                    className="px-6 py-2 bg-serenity-teal text-white rounded-xl text-xs font-bold shadow-md hover:bg-serenity-teal/90 transition-colors disabled:opacity-50"
                                 >
                                     Create Tag
                                 </button>
@@ -262,7 +262,7 @@ export const TagManager = ({ isOpen, onClose, onTagsChanged, contactId, contactT
                         </button>
                         <button
                             onClick={onClose}
-                            className="flex-1 py-3 bg-red-500 hover:bg-red-600 rounded-2xl text-sm text-white font-bold flex items-center justify-center gap-2 transition-all shadow-md active:scale-95"
+                            className="flex-1 py-3 bg-serenity-teal hover:bg-serenity-teal/90 rounded-2xl text-sm text-white font-bold flex items-center justify-center gap-2 transition-all shadow-md active:scale-95"
                         >
                             <Check size={18} /> Finish
                         </button>

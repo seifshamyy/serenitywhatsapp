@@ -46,7 +46,7 @@ export const MessageBubble = ({ message }: MessageBubbleProps) => {
                     className={`
             relative max-w-[85%] sm:max-w-[75%] md:max-w-[65%] px-3 py-2 rounded-2xl shadow-sm
             ${isOwn
-                            ? 'bg-serenity-light text-slate-900 border border-serenity-light rounded-br-sm'
+                            ? 'bg-serenity-teal text-white rounded-br-sm'
                             : 'bg-white text-slate-900 border border-slate-100 rounded-bl-sm'
                         }
           `}
@@ -54,7 +54,7 @@ export const MessageBubble = ({ message }: MessageBubbleProps) => {
                 >
                     {/* Reply Indicator */}
                     {message.is_reply === 'true' && message.reply_to_mid && (
-                        <div className="mb-2 px-2 py-1.5 rounded bg-slate-50 border-l-2 border-serenity-teal text-[11px] text-slate-500 italic">
+                        <div className={`mb-2 px-2 py-1.5 rounded border-l-2 text-[11px] italic ${isOwn ? 'bg-black/10 border-white/40 text-white/90' : 'bg-slate-50 border-serenity-teal text-slate-500'}`}>
                             ↩️ Replying to message
                         </div>
                     )}
@@ -104,18 +104,18 @@ export const MessageBubble = ({ message }: MessageBubbleProps) => {
 
                     {/* Timestamp & Status */}
                     <div className={`flex items-center gap-1.5 mt-1 ${isRTL ? 'justify-start' : 'justify-end'}`}>
-                        <span className="text-[10px] text-slate-400 font-medium">
+                        <span className={`text-[10px] font-medium ${isOwn ? 'text-white/70' : 'text-slate-400'}`}>
                             {formatTime(message.created_at)}
                         </span>
                         {isOwn && (
                             <>
-                                {message.status === 'sending' && <Clock size={12} className="text-slate-400 animate-pulse" />}
-                                {message.status === 'error' && <span className="text-serenity-teal text-[10px] font-bold">Retry</span>}
+                                {message.status === 'sending' && <Clock size={12} className="text-white/70 animate-pulse" />}
+                                {message.status === 'error' && <span className="text-white text-[10px] font-bold">Retry</span>}
                                 {(!message.status || message.status === 'sent') && (
                                     message.mid ? (
-                                        <CheckCheck size={14} className="text-serenity-teal" />
+                                        <CheckCheck size={14} className="text-white/90" />
                                     ) : (
-                                        <Clock size={12} className="text-slate-300" />
+                                        <Clock size={12} className="text-white/50" />
                                     )
                                 )}
                             </>

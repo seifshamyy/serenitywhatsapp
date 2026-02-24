@@ -77,7 +77,7 @@ app.post('/api/push/unsubscribe', async (req, res) => {
     }
 
     const { error } = await supabase
-        .from('push_subscriptions_buongo')
+        .from('push_subscriptions_serenity')
         .delete()
         .eq('endpoint', endpoint);
 
@@ -125,7 +125,7 @@ async function startRealtimeListener() {
             {
                 event: 'INSERT',
                 schema: 'public',
-                table: 'whatsappbuongo',
+                table: 'whatsappserenity',
             },
             async (payload) => {
                 const msg = payload.new;
@@ -143,7 +143,7 @@ async function startRealtimeListener() {
                 let senderName = `+${msg.from}`;
                 try {
                     const { data: contact } = await supabase
-                        .from('contacts.buongo')
+                        .from('contacts.serenity')
                         .select('name_WA')
                         .eq('id', msg.from)
                         .single();
@@ -170,7 +170,7 @@ async function startRealtimeListener() {
 async function sendPushToAll(notification) {
     // Get all subscriptions
     const { data: subs, error } = await supabase
-        .from('push_subscriptions_buongo')
+        .from('push_subscriptions_serenity')
         .select('*');
 
     if (error || !subs || subs.length === 0) {
@@ -197,7 +197,7 @@ async function sendPushToAll(notification) {
                 if (err.statusCode === 410 || err.statusCode === 404) {
                     console.log(`[Push] Removing expired subscription: ${sub.endpoint.slice(-20)}`);
                     await supabase
-                        .from('push_subscriptions_buongo')
+                        .from('push_subscriptions_serenity')
                         .delete()
                         .eq('endpoint', sub.endpoint);
                 } else {

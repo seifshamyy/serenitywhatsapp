@@ -65,7 +65,7 @@ export const NeuralFeed = ({ selectedChat }: NeuralFeedProps) => {
     if (error) {
         return (
             <div className="flex-1 flex items-center justify-center bg-white px-4">
-                <div className="text-red-600 text-sm font-bold bg-red-50 px-5 py-3 rounded-xl border border-red-200 shadow-sm text-center">
+                <div className="text-serenity-peach text-sm font-bold bg-serenity-light px-5 py-3 rounded-xl border border-serenity-peach/30 shadow-sm text-center">
                     ⚠️ {error}
                 </div>
             </div>
