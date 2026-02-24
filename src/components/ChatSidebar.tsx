@@ -90,13 +90,21 @@ export const ChatSidebar = ({ onSelectChat, selectedChat }: ChatSidebarProps) =>
     }, []);
 
     const fetchContacts = useCallback(async () => {
-        const { data } = await supabase
-            .from('whatsappbuongo')
-            .select('*')
-            .order('created_at', { ascending: false });
+        // Fetch both messages and contacts in parallel so names are always available
+        const [msgsResult, ebpResult] = await Promise.all([
+            supabase.from('whatsappbuongo').select('*').order('created_at', { ascending: false }),
+            supabase.from('contacts.buongo').select('*'),
+        ]);
 
-        if (data) {
-            const msgs = data as WhatsAppMessage[];
+        if (msgsResult.data) {
+            // Build a fresh contacts lookup from the inline fetch
+            const ebpMap = new Map<string, ContactEbp>();
+            if (ebpResult.data) {
+                (ebpResult.data as ContactEbp[]).forEach(c => ebpMap.set(String(c.id), c));
+                setContactsMap(ebpMap);
+            }
+
+            const msgs = msgsResult.data as WhatsAppMessage[];
             const contactMap = new Map<string, SidebarContact>();
 
             msgs.forEach((msg) => {
@@ -105,7 +113,7 @@ export const ChatSidebar = ({ onSelectChat, selectedChat }: ChatSidebarProps) =>
 
                 const isIncoming = msg.from && /^\d+$/.test(msg.from);
                 const isRead = readMessages.has(msg.id);
-                const ebpContact = contactsMap.get(contactId);
+                const ebpContact = ebpMap.get(contactId);
 
                 if (!contactMap.has(contactId)) {
                     contactMap.set(contactId, {
@@ -130,7 +138,7 @@ export const ChatSidebar = ({ onSelectChat, selectedChat }: ChatSidebarProps) =>
             setContacts(sortedContacts);
         }
         setLoading(false);
-    }, [readMessages, contactsMap]);
+    }, [readMessages]);
 
     useEffect(() => {
         if (selectedChat) {
