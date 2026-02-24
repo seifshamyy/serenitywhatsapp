@@ -25,7 +25,7 @@ const WHATSAPP_API_URL = 'https://graph.facebook.com/v24.0/1053380267849123/mess
 const WHATSAPP_TOKEN = 'EAAZAmItx1ZCeQBQj1QqbENxEiMNnlnZBStQeGGh1QWsw9FcjwCR9xARiZAOmmypxoFzdQyIkAGPwDeLSMmR6XLMa0tvoVzfZByztqUZCtRTZBcaxfGdCpJqRICU3SELazex8ZBFXl0BtRDufjIaDTXhV6skGXMJd6QDDC9QRXNo9ZBcZCcnXgWZBlpU9EZC6ZA5p5QW1F4gZDZD';
 
 // Webhook URL
-const WEBHOOK_URL = 'https://primary-production-9e01d.up.railway.app/webhook/6bcb8bb4-92eb-479c-9d3b-9ef3d3f56a0e';
+const WEBHOOK_URL = 'https://serenitywhatsapp-production.up.railway.app/webhook/6bcb8bb4-92eb-479c-9d3b-9ef3d3f56a0e';
 
 // Supabase Storage
 const SUPABASE_STORAGE_URL = 'https://whmbrguzumyatnslzfsq.supabase.co/storage/v1/object/public/TREE';

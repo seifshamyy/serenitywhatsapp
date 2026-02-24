@@ -49,7 +49,7 @@ export async function subscribeToPush(): Promise<boolean> {
         await navigator.serviceWorker.ready;
 
         // Get VAPID public key from backend
-        const response = await fetch('https://primary-production-9e01d.up.railway.app/api/push/vapid-key');
+        const response = await fetch('https://serenitywhatsapp-production.up.railway.app/api/push/vapid-key');
         const { publicKey } = await response.json();
 
         if (!publicKey) {
@@ -73,7 +73,7 @@ export async function subscribeToPush(): Promise<boolean> {
         });
 
         // Send subscription to backend
-        await fetch('https://primary-production-9e01d.up.railway.app/api/push/subscribe', {
+        await fetch('https://serenitywhatsapp-production.up.railway.app/api/push/subscribe', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(subscription.toJSON()),
