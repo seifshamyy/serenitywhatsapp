@@ -60,13 +60,17 @@ export async function subscribeToPush(): Promise<boolean> {
         // Check if already subscribed
         let subscription = await registration.pushManager.getSubscription();
 
-        if (!subscription) {
-            // Subscribe
-            subscription = await registration.pushManager.subscribe({
-                userVisibleOnly: true,
-                applicationServerKey: urlBase64ToUint8Array(publicKey) as BufferSource,
-            });
+        if (subscription) {
+            // Unsubscribe existing subscription to ensure we use the new VAPID key
+            console.log('[Push] Unsubscribing old subscription due to VAPID key refresh');
+            await subscription.unsubscribe();
         }
+
+        // Subscribe anew with current public key
+        subscription = await registration.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: urlBase64ToUint8Array(publicKey) as BufferSource,
+        });
 
         // Send subscription to server
         await fetch('/api/push/subscribe', {
