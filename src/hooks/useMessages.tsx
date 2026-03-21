@@ -149,7 +149,12 @@ export const MessagesProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
                             const existingIdx = existing.messages.findIndex(
                                 (m: WhatsAppMessage) =>
-                                    m.id === newMsg.id || (m.mid && newMsg.mid && m.mid === newMsg.mid)
+                                    m.id === newMsg.id ||
+                                    (m.mid && newMsg.mid && m.mid === newMsg.mid) ||
+                                    // Match optimistic outgoing message by recipient + type + text
+                                    (m.status === 'sending' && !m.mid &&
+                                        m.to === newMsg.to && m.type === newMsg.type &&
+                                        (m.type !== 'text' || m.text === newMsg.text))
                             );
                             const messages = [...existing.messages];
                             if (existingIdx !== -1) {

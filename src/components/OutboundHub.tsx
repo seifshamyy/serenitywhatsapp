@@ -187,7 +187,6 @@ export const OutboundHub = ({ recipientId, onMessageSent, addOptimisticMessage }
 
         // OPTIMISTIC UPDATE
         const tempId = Date.now();
-        const tempMid = `audio_${tempId}`;
         const objectUrl = URL.createObjectURL(audioBlob);
 
         addOptimisticMessage({
@@ -197,7 +196,7 @@ export const OutboundHub = ({ recipientId, onMessageSent, addOptimisticMessage }
             media_url: objectUrl,
             from: null,
             to: recipientId,
-            mid: tempMid,
+            mid: null,
             created_at: new Date().toISOString(),
             status: 'sending'
         });
@@ -362,7 +361,7 @@ export const OutboundHub = ({ recipientId, onMessageSent, addOptimisticMessage }
             media_url: optimisticUrl,
             from: null,
             to: recipientId,
-            mid: `temp_${tempId}`,
+            mid: null,
             created_at: new Date().toISOString(),
             status: 'sending'
         });
