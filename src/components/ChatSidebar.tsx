@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { Search, Plus, User, Tag as TagIcon, Bell, BellRing } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { WhatsAppMessage, ContactEbp, Tag, getContactId } from '../types';
@@ -91,9 +91,14 @@ export const ChatSidebar = ({ onSelectChat, selectedChat }: ChatSidebarProps) =>
     }, []);
 
     const fetchContacts = useCallback(async () => {
-        // Fetch both messages and contacts in parallel so names are always available
+        // Minimal columns: skip media_url, is_reply, reply_to_mid, mid — not needed for sidebar
+        // Limit 2000 most-recent messages to build the contact list efficiently
         const [msgsResult, ebpResult] = await Promise.all([
-            supabase.from('whatsappserenity').select('*').order('created_at', { ascending: false }),
+            supabase
+                .from('whatsappserenity')
+                .select('id, from, to, text, type, created_at')
+                .order('created_at', { ascending: false })
+                .limit(2000),
             supabase.from('contacts.serenity').select('*'),
         ]);
 
@@ -232,8 +237,15 @@ export const ChatSidebar = ({ onSelectChat, selectedChat }: ChatSidebarProps) =>
     }, []);
 
     const [selectedTagFilter, setSelectedTagFilter] = useState<number | null>(null);
+    const [displayLimit, setDisplayLimit] = useState(50);
+    const sentinelRef = useRef<HTMLDivElement>(null);
 
-    const filteredContacts = contacts.filter((c) => {
+    // Reset display limit when search or tag filter changes
+    useEffect(() => {
+        setDisplayLimit(50);
+    }, [searchQuery, selectedTagFilter]);
+
+    const filteredContacts = useMemo(() => contacts.filter((c) => {
         // Text search: name, number, message, or tag name
         const textMatch = !searchQuery || (
             c.id.includes(searchQuery) ||
@@ -249,7 +261,27 @@ export const ChatSidebar = ({ onSelectChat, selectedChat }: ChatSidebarProps) =>
         const tagMatch = !selectedTagFilter || (c.tags && c.tags.includes(selectedTagFilter));
 
         return textMatch && tagMatch;
-    });
+    }), [contacts, searchQuery, selectedTagFilter, allTags]);
+
+    // Only render the next 50 contacts at a time; IntersectionObserver expands on scroll
+    const visibleContacts = filteredContacts.slice(0, displayLimit);
+
+    // Expand displayLimit when the sentinel scrolls into view
+    useEffect(() => {
+        const el = sentinelRef.current;
+        if (!el) return;
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting && displayLimit < filteredContacts.length) {
+                    setDisplayLimit((prev) => prev + 50);
+                }
+            },
+            { threshold: 0.1 }
+        );
+        observer.observe(el);
+        return () => observer.disconnect();
+    }, [displayLimit, filteredContacts.length]);
+
 
     const formatTime = (timestamp: string) => {
         try {
@@ -368,7 +400,8 @@ export const ChatSidebar = ({ onSelectChat, selectedChat }: ChatSidebarProps) =>
                             No conversations match your search
                         </div>
                     ) : (
-                        filteredContacts.map((contact) => {
+                        <>
+                        {visibleContacts.map((contact) => {
                             const color = getAvatarColor(contact.id);
                             return (
                                 <button
@@ -451,7 +484,14 @@ export const ChatSidebar = ({ onSelectChat, selectedChat }: ChatSidebarProps) =>
                                     </div>
                                 </button>
                             );
-                        })
+                        })}
+                        {/* Sentinel: triggers loading the next 50 contacts when scrolled into view */}
+                        {displayLimit < filteredContacts.length && (
+                            <div ref={sentinelRef} className="py-2 flex justify-center">
+                                <span className="text-[10px] text-slate-300">Loading more...</span>
+                            </div>
+                        )}
+                        </>
                     )}
                 </PullToRefresh>
 

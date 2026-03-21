@@ -9,7 +9,7 @@ import { registerServiceWorker } from './lib/pushNotifications';
 function App() {
     const [selectedChat, setSelectedChat] = useState<string | null>(null);
     const [showMobileChat, setShowMobileChat] = useState(false);
-    const { addOptimisticMessage, refetch } = useMessages();
+    const { addOptimisticMessage, clearContactMessages } = useMessages();
     const rootRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -109,7 +109,7 @@ function App() {
                                 contactId={selectedChat}
                                 onBack={handleBack}
                                 showBackButton={true}
-                                onChatDeleted={refetch}
+                                onChatDeleted={() => clearContactMessages(selectedChat)}
                             />
                             <NeuralFeed key={selectedChat} selectedChat={selectedChat} />
                             <OutboundHub

@@ -1,38 +1,63 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { useMessages } from '../hooks/useMessages';
 import { MessageBubble } from './MessageBubble';
 import { MessageSquare } from 'lucide-react';
-import { getContactId } from '../types';
 
 interface NeuralFeedProps {
     selectedChat: string | null;
 }
 
 export const NeuralFeed = ({ selectedChat }: NeuralFeedProps) => {
-    const { messages, loading, error } = useMessages();
+    const { contactData, fetchContactMessages } = useMessages();
     const containerRef = useRef<HTMLDivElement>(null);
-    const [prevMsgCount, setPrevMsgCount] = useState(0);
+    const lastMsgIdRef = useRef<number | string | null>(null);
 
-    // Filter messages for selected chat
-    const filteredMessages = selectedChat
-        ? messages.filter((m) => getContactId(m) === selectedChat)
-        : messages;
+    const data = selectedChat ? (contactData[selectedChat] ?? { messages: [], loading: false }) : null;
+    const messages = data?.messages ?? [];
+    const loading = data?.loading ?? false;
 
-    // Smooth scroll to bottom when NEW messages arrive (not on initial load)
+    // Fetch all messages when contact is selected (no-op if already cached)
     useEffect(() => {
-        const hasNewMessages = filteredMessages.length > prevMsgCount;
-
-        if (hasNewMessages && prevMsgCount > 0 && containerRef.current) {
-            // In column-reverse, scrollTop=0 is the bottom
-            // Check if user is near bottom (scrollTop close to 0)
-            const isNearBottom = Math.abs(containerRef.current.scrollTop) < 100;
-            if (isNearBottom) {
-                containerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
-            }
+        if (selectedChat) {
+            fetchContactMessages(selectedChat);
         }
+    }, [selectedChat, fetchContactMessages]);
 
-        setPrevMsgCount(filteredMessages.length);
-    }, [filteredMessages.length, prevMsgCount]);
+    // Silent background refresh when tab regains focus (catches missed realtime events)
+    useEffect(() => {
+        if (!selectedChat) return;
+        const onVisible = () => {
+            if (document.visibilityState === 'visible') {
+                fetchContactMessages(selectedChat, true);
+            }
+        };
+        document.addEventListener('visibilitychange', onVisible);
+        return () => document.removeEventListener('visibilitychange', onVisible);
+    }, [selectedChat, fetchContactMessages]);
+
+    // Scroll to bottom on initial load and when new messages arrive
+    useEffect(() => {
+        if (!containerRef.current || messages.length === 0) return;
+        const lastMsg = messages[messages.length - 1];
+        const lastId = lastMsg.id ?? lastMsg.mid;
+
+        if (lastId !== lastMsgIdRef.current) {
+            const isInitialLoad = lastMsgIdRef.current === null;
+            const container = containerRef.current;
+            // column-reverse: scrollTop=0 is the bottom (newest messages)
+            const isNearBottom = Math.abs(container.scrollTop) < 150;
+
+            if (isInitialLoad || isNearBottom) {
+                container.scrollTo({ top: 0, behavior: isInitialLoad ? 'instant' : 'smooth' });
+            }
+            lastMsgIdRef.current = lastId;
+        }
+    }, [messages]);
+
+    // Reset scroll tracking when contact changes
+    useEffect(() => {
+        lastMsgIdRef.current = null;
+    }, [selectedChat]);
 
     if (!selectedChat) {
         return (
@@ -62,16 +87,6 @@ export const NeuralFeed = ({ selectedChat }: NeuralFeedProps) => {
         );
     }
 
-    if (error) {
-        return (
-            <div className="flex-1 flex items-center justify-center bg-white px-4">
-                <div className="text-serenity-peach text-sm font-bold bg-serenity-light px-5 py-3 rounded-xl border border-serenity-peach/30 shadow-sm text-center">
-                    ⚠️ {error}
-                </div>
-            </div>
-        );
-    }
-
     return (
         <div
             ref={containerRef}
@@ -79,15 +94,12 @@ export const NeuralFeed = ({ selectedChat }: NeuralFeedProps) => {
             style={{
                 display: 'flex',
                 flexDirection: 'column-reverse',
-                backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2364748b' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-                backgroundColor: '#f8fafc'
+                backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2364748b' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C%2Fg%3E%3C%2Fsvg%3E")`,
+                backgroundColor: '#f8fafc',
             }}
         >
-            {/* Single wrapper div inside column-reverse container.
-                column-reverse makes scrollTop=0 the bottom of content.
-                Messages inside this div are in normal chronological order. */}
             <div className="space-y-4">
-                {filteredMessages.length === 0 ? (
+                {messages.length === 0 ? (
                     <div className="flex items-center justify-center py-20">
                         <div className="text-center bg-white/50 backdrop-blur-sm p-8 rounded-3xl border border-slate-200/50">
                             <div className="text-5xl mb-4">✨</div>
@@ -95,8 +107,8 @@ export const NeuralFeed = ({ selectedChat }: NeuralFeedProps) => {
                         </div>
                     </div>
                 ) : (
-                    filteredMessages.map((msg) => (
-                        <MessageBubble key={msg.id || msg.mid} message={msg} />
+                    messages.map((msg) => (
+                        <MessageBubble key={msg.id ?? msg.mid} message={msg} />
                     ))
                 )}
             </div>
