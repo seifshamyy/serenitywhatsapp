@@ -117,11 +117,26 @@ app.get('*', (req, res) => {
 });
 
 // --- Supabase Realtime: Listen for new messages ---
+let realtimeChannel = null;
+let reconnectTimer = null;
+
 async function startRealtimeListener() {
+    // Clear any pending reconnect
+    if (reconnectTimer) {
+        clearTimeout(reconnectTimer);
+        reconnectTimer = null;
+    }
+
+    // Remove previous channel cleanly
+    if (realtimeChannel) {
+        await supabase.removeChannel(realtimeChannel).catch(() => {});
+        realtimeChannel = null;
+    }
+
     console.log('[Realtime] Starting listener for new messages...');
 
-    const channel = supabase
-        .channel('new-messages')
+    realtimeChannel = supabase
+        .channel(`new-messages-${Date.now()}`)
         .on(
             'postgres_changes',
             {
@@ -131,13 +146,9 @@ async function startRealtimeListener() {
             },
             async (payload) => {
                 const msg = payload.new;
-                console.log('[Realtime] Got INSERT payload:', JSON.stringify(payload, null, 2));
 
                 // Only notify on incoming messages (msg.from is populated)
-                if (!msg.from) {
-                    console.log('[Realtime] Skipping - no "from" field');
-                    return;
-                }
+                if (!msg.from) return;
 
                 console.log(`[Realtime] New message from ${msg.from}`);
 
@@ -166,6 +177,11 @@ async function startRealtimeListener() {
         )
         .subscribe((status) => {
             console.log(`[Realtime] Subscription status: ${status}`);
+
+            if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
+                console.log('[Realtime] Connection lost — reconnecting in 5s...');
+                reconnectTimer = setTimeout(() => startRealtimeListener(), 5000);
+            }
         });
 }
 
@@ -184,8 +200,13 @@ async function sendPushToAll(notification) {
 
     const payload = JSON.stringify(notification);
 
+    const validSubs = subs.filter((s) => s.keys?.p256dh && s.keys?.auth);
+    if (validSubs.length < subs.length) {
+        console.log(`[Push] Skipping ${subs.length - validSubs.length} subscription(s) with missing keys`);
+    }
+
     const results = await Promise.allSettled(
-        subs.map(async (sub) => {
+        validSubs.map(async (sub) => {
             try {
                 await webpush.sendNotification(
                     {
@@ -210,7 +231,7 @@ async function sendPushToAll(notification) {
     );
 
     const sent = results.filter((r) => r.status === 'fulfilled').length;
-    console.log(`[Push] Sent ${sent}/${subs.length}`);
+    console.log(`[Push] Sent ${sent}/${validSubs.length}`);
 }
 
 // --- Start ---
